@@ -40,9 +40,6 @@ def root():
     return {"status": "OK"}
 
 @app.post("/predict")
-def options_handler():
-    return JSONResponse(content={"message": "CORS preflight OK"})
-    
 def predict(data: List[BudgetItem]):
     response = []
 

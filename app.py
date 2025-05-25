@@ -36,6 +36,9 @@ model = joblib.load("model.joblib")  # Update with your actual model path
 
 # POST endpoint to predict if a budget is over or under
 @app.post("/predict")
+def options_handler():
+    return JSONResponse(content={"message": "CORS preflight OK"})
+    
 def predict(data: List[BudgetItem]):
     response = []
 

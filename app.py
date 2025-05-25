@@ -12,7 +12,7 @@ app = FastAPI()
 # CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # frontend origin
+    allow_origins=["https://frank-business-app.netlify.app"],  # frontend origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,10 +35,14 @@ class BudgetItem(BaseModel):
 model = joblib.load("model.joblib")  # Update with your actual model path
 
 # POST endpoint to predict if a budget is over or under
+@app.get("/")
+def root():
+    return {"status": "OK"}
+
 @app.post("/predict")
 def options_handler():
     return JSONResponse(content={"message": "CORS preflight OK"})
-
+    
 def predict(data: List[BudgetItem]):
     response = []
 

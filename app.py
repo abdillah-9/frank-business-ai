@@ -35,7 +35,7 @@ class BudgetItem(BaseModel):
 model = joblib.load("model.joblib")  # Update with your actual model path
 
 # POST endpoint to predict if a budget is over or under
-@app.get("/")
+@app.get("/wakeUp")
 def root():
     return {"status": "OK"}
 

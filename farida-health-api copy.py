@@ -25,6 +25,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Explicit OPTIONS handler for CORS preflight on ovulation API
+from fastapi.responses import JSONResponse
+from fastapi.requests import Request
+
+@app.options("/farida-ovulation-api")
+async def options_handler(request: Request):
+    return JSONResponse(content={}, status_code=200)
+
+@app.options("/farida-pregnancy-api")
+async def options_handler_pregnancy(request: Request):
+    return JSONResponse(content={}, status_code=200)
+
+@app.options("/farida-childcare-api")
+async def options_handler_childcare(request: Request):
+    return JSONResponse(content={}, status_code=200)
+
 # ----------- Data Models -----------
 
 class OvulationRecord(BaseModel):

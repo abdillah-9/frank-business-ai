@@ -18,7 +18,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://frank-business-app.netlify.app",
-        "https://woman-reproduction-health-tracker.netlify.app"
+        "https://woman-reproduction-health-tracker.netlify.app",
+        "http://localhost:3000"
     ],
     allow_credentials=True,
     allow_methods=["*"],

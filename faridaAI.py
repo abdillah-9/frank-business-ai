@@ -18,14 +18,6 @@ STRESS_MAP = {"low": 0, "medium": 1, "high": 2}
 
 router = APIRouter()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://woman-reproduction-health-tracker.netlify.app"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # ----------- Data Models -----------
 
 class OvulationRecord(BaseModel):

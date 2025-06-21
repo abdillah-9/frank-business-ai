@@ -16,7 +16,10 @@ app.include_router(farida_router)
 # CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://frank-business-app.netlify.app"],  # frontend origin
+    allow_origins=[
+        "https://frank-business-app.netlify.app",
+        "https://woman-reproduction-health-tracker.netlify.app"
+    ]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

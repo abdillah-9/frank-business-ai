@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi import APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
@@ -15,7 +16,7 @@ childcareModel = joblib.load("childcareModel.joblib")
 
 STRESS_MAP = {"low": 0, "medium": 1, "high": 2}
 
-app = FastAPI()
+router = APIRouter()
 
 app.add_middleware(
     CORSMiddleware,
@@ -95,7 +96,7 @@ def format_date(dt: datetime):
 
 # ----------- Routes -----------
 
-@app.get("/wakeUp")
+@router.get("/wakeUp")
 def wake_up():
     return {"status": "OK"}
 
@@ -130,7 +131,7 @@ def predict_user_condition(user_data: List[dict]):
 
     return int(ovulationModel.predict(features)[0])
 
-@app.post("/farida-ovulation-api")
+@router.post("/farida-ovulation-api")
 def predict_ovulation(request: OvulationRequest):
     user_data = [record.dict() for record in request.filteredOvulation]
     if not user_data:
@@ -231,7 +232,7 @@ def predict_pregnancy_condition(user_data: List[dict]):
 
     return int(pregnancyModel.predict(features)[0])
 
-@app.post("/farida-pregnancy-api")
+@router.post("/farida-pregnancy-api")
 def predict_pregnancy(request: PregnanceRequest):
     user_data = [record.dict() for record in request.filteredPregnance]
     if not user_data:
@@ -318,7 +319,7 @@ def predict_childcare_condition(user_data: List[dict]):
 
     return int(childcareModel.predict(features)[0])
 
-@app.post("/farida-childcare-api")
+@router.post("/farida-childcare-api")
 def predict_childcare(request: ChildcareRequest):
     user_data = [record.dict() for record in request.filteredChildcare]
     if not user_data:
@@ -369,8 +370,3 @@ def predict_childcare(request: ChildcareRequest):
         ]),
         "hint": [final_hint]
     }
-
-# ----------- Run App -----------
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)

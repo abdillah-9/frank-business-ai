@@ -5,9 +5,13 @@ from typing import List
 import joblib
 import uvicorn
 import random
+from faridaAI import router as farida_router
 
 # Initialize FastAPI app
 app = FastAPI()
+
+#include /register faridaAI.py routes
+app.include_router(farida_router)
 
 # CORS setup
 app.add_middleware(

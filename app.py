@@ -19,7 +19,7 @@ app.add_middleware(
     allow_origins=[
         "https://frank-business-app.netlify.app",
         "https://woman-reproduction-health-tracker.netlify.app"
-    ]
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

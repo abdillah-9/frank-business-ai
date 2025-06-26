@@ -12,15 +12,16 @@ random.seed(42)
 # Dynamically generate training data
 training_data = []
 
-for _ in range(500):  # Generate 500 examples
-    budget = random.randint(1_000, 500_000)
+for i in range(500):  # Generate 500 examples
+    budget = random.randint(1_000, 500_000) # the _ is just ignored, its just for formating 
     
-    # Add variability: 50% chance to be over budget
-    if random.random() > 0.5:
-        spent = budget + random.randint(1, int(budget * 0.5))  # over budget by up to 50%
+    # Randomly vary spent by ±50% of budget
+    spent = budget + random.randint(-int(budget * 0.5), int(budget * 0.5))
+
+    # New rule: over_budget if spent >= 75% of budget
+    if spent >= 0.75 * budget:
         over_budget = 1
     else:
-        spent = budget - random.randint(1, int(budget * 0.5))  # under budget by up to 50%
         over_budget = 0
 
     training_data.append({

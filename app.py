@@ -10,7 +10,7 @@ from faridaAI import router as farida_router
 # Initialize FastAPI app
 app = FastAPI()
 
-#include /register faridaAI.py routes
+#include / register faridaAI.py routes
 app.include_router(farida_router)
 
 # CORS setup
@@ -96,6 +96,12 @@ def predict(data: List[BudgetItem]):
         budget = item.budgetAmount
         spent = item.expenseTotal
 
+        # Calculate actual percentage of budget used
+        if budget == 0:
+            percentage_spent = 0  # Avoid division by zero
+        else:
+            percentage_spent = round((spent / budget) * 100, 2)
+
         # Predict using the model
         prediction = model.predict([[budget, spent]])[0]
 
@@ -121,7 +127,8 @@ def predict(data: List[BudgetItem]):
             "budgetName": item.budgetName,
             "tip_title": tip_title,
             "tip_desc": tip_desc,
-            "over_budget": bool(prediction)
+            "over_budget": bool(prediction),
+            "percentage_spent": percentage_spent,
         })
 
     return response

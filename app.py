@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
-import joblib
 import uvicorn
 import random
 from faridaAI import router as farida_router
@@ -10,7 +9,7 @@ from faridaAI import router as farida_router
 # Initialize FastAPI app
 app = FastAPI()
 
-#include / register faridaAI.py routes
+# Include / register faridaAI.py routes
 app.include_router(farida_router)
 
 # CORS setup
@@ -39,10 +38,7 @@ class BudgetItem(BaseModel):
     expenseTotal: float
     allExpenses: List[Expense]
 
-# Load your ML model
-model = joblib.load("model.joblib")  # Update with your actual model path
-
-# POST endpoint to predict if a budget is over or under
+# GET endpoint to keep server alive
 @app.get("/wakeUp")
 def root():
     return {"status": "OK"}
@@ -68,6 +64,20 @@ def predict(data: List[BudgetItem]):
         "Costs are creeping up—time for a course correction."
     ]
 
+    warning_titles = [
+        "Caution: Budget Halfway", "Heads Up!", "Approaching Limit", "Stay Alert",
+        "Keep an Eye Out", "Monitor Closely", "Almost There", "Careful Spending",
+        "Halfway Point", "Review Recommended"
+    ]
+
+    warning_descs = [
+        "You're spending moderately. Watch the rest closely.", "You're halfway there. Be cautious.",
+        "Consider rechecking your future expenses.", "Plan carefully—you're crossing 50%.",
+        "You’re doing fine, but keep tracking.", "Still in control, but don’t relax yet.",
+        "Monitor your spending closely.", "You're spending steadily—just keep an eye out.",
+        "Approaching the critical zone. Spend wisely.", "It’s not bad, but a review wouldn’t hurt."
+    ]
+
     within_budget_titles = [
         "Within budget", "On track", "Budget is healthy", "Under control",
         "Spending in check", "All good here", "Budget balanced", "Smart spending",
@@ -91,19 +101,14 @@ def predict(data: List[BudgetItem]):
         " The top expense in this budget was '{name}' totaling {amount:,}Tsh"
     ]
 
-    # Process each budget item
     for item in data:
         budget = item.budgetAmount
         spent = item.expenseTotal
 
-        # Calculate actual percentage of budget used
         if budget == 0:
-            percentage_spent = 0  # Avoid division by zero
+            percentage_spent = 0
         else:
             percentage_spent = round((spent / budget) * 100, 2)
-
-        # Predict using the model
-        prediction = model.predict([[budget, spent]])[0]
 
         # Determine highest expense
         if item.allExpenses:
@@ -113,21 +118,28 @@ def predict(data: List[BudgetItem]):
         else:
             expense_desc = ""
 
-        # Generate final tip
-        if prediction == 1:
+        # Apply business logic instead of ML
+        if percentage_spent > 75:
             tip_title = random.choice(over_budget_titles)
             tip_desc = random.choice(over_budget_descs) + expense_desc
-        else:
+            over_budget_flag = 1
+
+        elif 50 < percentage_spent <= 75:
+            tip_title = random.choice(warning_titles)
+            tip_desc = random.choice(warning_descs) + expense_desc
+            over_budget_flag = 0
+
+        else:  # <= 50
             tip_title = random.choice(within_budget_titles)
             tip_desc = random.choice(within_budget_descs) + expense_desc
+            over_budget_flag = 0
 
-        # Add to response
         response.append({
             "budgetID": item.budgetID,
             "budgetName": item.budgetName,
             "tip_title": tip_title,
             "tip_desc": tip_desc,
-            "over_budget": bool(prediction),
+            "over_budget": over_budget_flag,
             "percentage_spent": percentage_spent,
         })
 

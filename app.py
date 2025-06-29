@@ -92,7 +92,7 @@ def predict(data: List[BudgetItem]):
         "You're budgeting like a pro.", "Finances are looking healthy. Keep going!"
     ]
 
-    # Randomized expense explanation templates
+    # Expense detail phrases
     expense_phrases = [
         " Your highest expense is '{name}' which cost {amount:,}Tsh",
         " The most significant cost was '{name}' at {amount:,}Tsh",
@@ -105,12 +105,10 @@ def predict(data: List[BudgetItem]):
         budget = item.budgetAmount
         spent = item.expenseTotal
 
-        if budget == 0:
-            percentage_spent = 0
-        else:
-            percentage_spent = round((spent / budget) * 100, 2)
+        # Calculate percentage
+        percentage_spent = round((spent / budget) * 100, 2) if budget else 0
 
-        # Determine highest expense
+        # Expense details
         if item.allExpenses:
             highest_expense = max(item.allExpenses, key=lambda x: x.amount)
             phrase = random.choice(expense_phrases)
@@ -118,29 +116,28 @@ def predict(data: List[BudgetItem]):
         else:
             expense_desc = ""
 
-        # Apply business logic instead of ML
+        # Tips and flag logic
         if percentage_spent > 75:
             tip_title = random.choice(over_budget_titles)
             tip_desc = random.choice(over_budget_descs) + expense_desc
-            over_budget_flag = 1
-
+            over_budget_flag = True
         elif 50 < percentage_spent <= 75:
             tip_title = random.choice(warning_titles)
             tip_desc = random.choice(warning_descs) + expense_desc
-            over_budget_flag = 0
-
-        else:  # <= 50
+            over_budget_flag = False
+        else:
             tip_title = random.choice(within_budget_titles)
             tip_desc = random.choice(within_budget_descs) + expense_desc
-            over_budget_flag = 0
+            over_budget_flag = False
 
+        # Build response item
         response.append({
             "budgetID": item.budgetID,
             "budgetName": item.budgetName,
             "tip_title": tip_title,
             "tip_desc": tip_desc,
             "over_budget": over_budget_flag,
-            "percentage_spent": percentage_spent,
+            "percentage_spent": percentage_spent
         })
 
     return response
